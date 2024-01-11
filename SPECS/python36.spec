@@ -6,7 +6,7 @@
 
 Name:       python36
 Version:    %{pybasever}.8
-Release:    38%{?dist}
+Release:    2%{?dist}
 Summary:    Interpreter of the Python programming language
 
 License:    Python
@@ -60,10 +60,10 @@ Requires:   %{_libexecdir}/platform-python
 Requires:   python3-pip
 Requires:   python3-setuptools
 
-# Require alternatives version that implements the --keep-foreign flag
-Requires:         alternatives >= 1.19.1-1
-Requires(post):   alternatives >= 1.19.1-1
-Requires(postun): alternatives >= 1.19.1-1
+# Runtime require alternatives
+Requires:         %{_sbindir}/alternatives
+Requires(post):   %{_sbindir}/alternatives
+Requires(postun): %{_sbindir}/alternatives
 
 %global _description \
 Python is an accessible, high-level, dynamically typed, interpreted programming\
@@ -92,9 +92,6 @@ Provides:   python3-devel = %{version}-%{release}
 Provides:   python3-devel%{?_isa} = %{version}-%{release}
 Requires:   python36
 Requires:   platform-python-devel
-
-# Require alternatives version that implements the --keep-foreign flag
-Requires(postun): alternatives >= 1.19.1-1
 # python36 installs the alternatives master symlink to which we attach a slave
 Requires(post): python36
 Requires(postun): python36
@@ -117,9 +114,6 @@ Obsoletes:  python3-debug < 3.6.6-13
 Requires:   python36
 Requires:   python36-devel
 Requires:   platform-python-debug
-
-# Require alternatives version that implements the --keep-foreign flag
-Requires(postun): alternatives >= 1.19.1-1
 # python36 installs the alternatives master symlink to which we attach a slave
 Requires(post): python36
 Requires(postun): python36
@@ -270,12 +264,12 @@ fi
 %postun
 # Do this only during uninstall process (not during update)
 if [ $1 -eq 0 ]; then
-    alternatives --keep-foreign --remove python3 \
+    alternatives --remove python3 \
                         %{_bindir}/python3.6
 
     # Remove link python → python3 if no other python3.* exists
     if ! alternatives --display python3 > /dev/null; then
-        alternatives --keep-foreign --remove python \
+        alternatives --remove python \
                             %{_bindir}/python3
     fi
 fi
@@ -290,7 +284,7 @@ alternatives --add-slave python3 %{_bindir}/python3.6 \
 %postun -n python36-devel
 # Do this only during uninstall process (not during update)
 if [ $1 -eq 0 ]; then
-    alternatives --keep-foreign --remove-slave python3 %{_bindir}/python3.6 \
+    alternatives --remove-slave python3 %{_bindir}/python3.6 \
         python3-config
 fi
 
@@ -308,9 +302,9 @@ alternatives --add-slave python3 %{_bindir}/python3.6 \
 %postun -n python36-debug
 # Do this only during uninstall process (not during update)
 if [ $1 -eq 0 ]; then
-    alternatives --keep-foreign --remove-slave python3 %{_bindir}/python3.6 \
+    alternatives --remove-slave python3 %{_bindir}/python3.6 \
         python3-debug
-    alternatives --keep-foreign --remove-slave python3 %{_bindir}/python3.6 \
+    alternatives --remove-slave python3 %{_bindir}/python3.6 \
         python3-debug-config
 fi
 
@@ -357,14 +351,6 @@ fi
 
 
 %changelog
-* Wed Jul 28 2021 Tomas Orsava <torsava@redhat.com> - 3.6.8-38
-- Adjusted the postun scriptlets to enable upgrading to RHEL 9
-- Resolves: rhbz#1933055
-
-* Fri May 07 2021 Charalampos Stratakis <cstratak@redhat.com> - 3.6.8-37
-- Bump the release to a number higher than RHEL7
-- Resolves: rhbz#1954567
-
 * Thu Apr 25 2019 Tomas Orsava <torsava@redhat.com> - 3.6.8-2
 - Bumping due to problems with modular RPM upgrade path
 - Resolves: rhbz#1695587
