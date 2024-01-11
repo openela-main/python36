@@ -1,0 +1,7 @@
+The python36, python36-devel, and python36-debug packages contain symlinks that
+enable users to access the underlying Platform-Python implementation present in
+the RHEL8 system in packages platform-python, platform-python-devel and
+platform-python-debug.
+
+The python36-rpm-macros package contains RPM macros for building RPMs with
+Python 3.6 from the python36 module.
